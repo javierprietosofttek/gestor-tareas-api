@@ -37,3 +37,25 @@ def test_create_task_title_too_short_returns_422(client):
     response = client.post("/tasks/", json={"title": "ab"})
     assert response.status_code == 422
     assert response.json()["detail"] == "Title must be at least 3 characters long"
+
+
+def test_delete_all_tasks_clears_database(client):
+    client.post("/tasks/", json={"title": "Tarea uno"})
+    client.post("/tasks/", json={"title": "Tarea dos"})
+    client.post("/tasks/", json={"title": "Tarea tres"})
+
+    response = client.delete("/tasks/")
+    assert response.status_code == 204
+
+    listing = client.get("/tasks/")
+    assert listing.status_code == 200
+    assert listing.json() == []
+
+
+def test_delete_all_tasks_on_empty_database_returns_204(client):
+    response = client.delete("/tasks/")
+    assert response.status_code == 204
+
+    listing = client.get("/tasks/")
+    assert listing.status_code == 200
+    assert listing.json() == []
