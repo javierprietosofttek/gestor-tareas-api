@@ -25,11 +25,11 @@ def get_task_or_404(task_id: int, db: Session) -> Task:
 
     Raises:
         HTTPException: Si no existe una tarea con el ``task_id`` proporcionado
-            (código 404, detalle "Task not found").
+            (código 404, detalle "Tarea no encontrada").
     """
     task = db.query(Task).filter(Task.id == task_id).first()
     if not task:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tarea no encontrada")
     return task
 
 
@@ -62,7 +62,7 @@ def get_task(task_id: int, db: Session = Depends(get_db)):
 
     Raises:
         HTTPException: Si no existe una tarea con el ``task_id`` proporcionado
-            (código 404, detalle "Task not found").
+            (código 404, detalle "Tarea no encontrada").
     """
     return get_task_or_404(task_id, db)
 
@@ -119,7 +119,7 @@ def update_task(task_id: int, payload: TaskUpdate, db: Session = Depends(get_db)
 
     Raises:
         HTTPException: Si no existe una tarea con el ``task_id`` proporcionado
-            (código 404, detalle "Task not found").
+            (código 404, detalle "Tarea no encontrada").
     """
     task = get_task_or_404(task_id, db)
     for field, value in payload.model_dump(exclude_unset=True).items():
@@ -158,7 +158,7 @@ def delete_task(task_id: int, db: Session = Depends(get_db)):
 
     Raises:
         HTTPException: Si no existe una tarea con el ``task_id`` proporcionado
-            (código 404, detalle "Task not found").
+            (código 404, detalle "Tarea no encontrada").
     """
     task = get_task_or_404(task_id, db)
     db.delete(task)
