@@ -45,7 +45,7 @@ def list_tasks(db: Session = Depends(get_db)):
         List[TaskResponse]: Lista de tareas serializadas según el esquema
             de respuesta. Devuelve una lista vacía si no hay tareas.
     """
-    return []
+    return db.query(Task).all()
 
 
 # Devuelve una tarea por su identificador; 404 si no existe
