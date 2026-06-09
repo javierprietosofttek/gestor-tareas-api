@@ -59,3 +59,21 @@ def test_delete_all_tasks_on_empty_database_returns_204(client):
     listing = client.get("/tasks/")
     assert listing.status_code == 200
     assert listing.json() == []
+
+
+def test_list_tasks_with_limit(client):
+    for i in range(5):
+        client.post("/tasks/", json={"title": f"Tarea {i + 1}"})
+
+    response = client.get("/tasks/", params={"limit": 3})
+    assert response.status_code == 200
+    assert len(response.json()) == 3
+
+
+def test_list_tasks_without_limit_returns_all(client):
+    for i in range(4):
+        client.post("/tasks/", json={"title": f"Tarea {i + 1}"})
+
+    response = client.get("/tasks/")
+    assert response.status_code == 200
+    assert len(response.json()) == 4
