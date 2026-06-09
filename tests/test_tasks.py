@@ -59,3 +59,33 @@ def test_delete_all_tasks_on_empty_database_returns_204(client):
     listing = client.get("/tasks/")
     assert listing.status_code == 200
     assert listing.json() == []
+
+
+def test_create_task_with_description(client):
+    response = client.post(
+        "/tasks/", json={"title": "Task with desc", "description": "A short description"}
+    )
+    assert response.status_code == 201
+    data = response.json()
+    assert data["description"] == "A short description"
+
+
+def test_create_task_description_max_length_returns_422(client):
+    long_desc = "x" * 201
+    response = client.post("/tasks/", json={"title": "Valid title", "description": long_desc})
+    assert response.status_code == 422
+
+
+def test_update_task_description_max_length_returns_422(client):
+    create_resp = client.post("/tasks/", json={"title": "Valid title"})
+    task_id = create_resp.json()["id"]
+    long_desc = "x" * 201
+    response = client.patch(f"/tasks/{task_id}", json={"description": long_desc})
+    assert response.status_code == 422
+
+
+def test_create_task_description_at_boundary(client):
+    desc_200 = "a" * 200
+    response = client.post("/tasks/", json={"title": "Boundary", "description": desc_200})
+    assert response.status_code == 201
+    assert response.json()["description"] == desc_200
