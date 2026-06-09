@@ -32,3 +32,8 @@ class TaskResponse(BaseModel):
 
     # from_attributes permite construir el esquema desde un objeto ORM de SQLAlchemy
     model_config = {"from_attributes": True}
+
+
+# Esquema de respuesta para el conteo total de tareas
+class TaskCountResponse(BaseModel):
+    count: int
