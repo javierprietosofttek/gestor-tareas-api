@@ -59,3 +59,11 @@ def test_delete_all_tasks_on_empty_database_returns_204(client):
     listing = client.get("/tasks/")
     assert listing.status_code == 200
     assert listing.json() == []
+
+
+def test_create_task_returns_201():
+    response = client.post(
+        "/tasks/",
+        json={"title": "Test"}
+    )
+    assert response.status_code == 201
