@@ -74,14 +74,14 @@ def create_task(payload: TaskCreate, db: Session = Depends(get_db)):
 
     Args:
         payload (TaskCreate): Esquema con los datos de la tarea a crear.
-            Solo el título es obligatorio; la descripción y el estado son
-            opcionales.
+            Solo el título es obligatorio; la descripción, el estado y la
+            prioridad son opcionales (por defecto ``pending`` y ``medium``).
         db (Session): Sesión activa de SQLAlchemy inyectada por FastAPI.
 
     Returns:
         TaskResponse: Tarea recién creada serializada según el esquema de
             respuesta, incluyendo los campos generados por la base de datos
-            (``id`` y ``created_at``).
+            (``id``, ``priority`` y ``created_at``).
 
     Raises:
         HTTPException: Si el título tiene menos de 3 caracteres
@@ -110,7 +110,7 @@ def update_task(task_id: int, payload: TaskUpdate, db: Session = Depends(get_db)
     Args:
         task_id (int): Identificador único de la tarea a actualizar.
         payload (TaskUpdate): Esquema con los campos a modificar. Todos
-            los campos son opcionales.
+            los campos son opcionales, incluida la prioridad.
         db (Session): Sesión activa de SQLAlchemy inyectada por FastAPI.
 
     Returns:
