@@ -39,6 +39,20 @@ def test_create_task_title_too_short_returns_422(client):
     assert response.json()["detail"] == "Title must be at least 3 characters long"
 
 
+def test_list_tasks_returns_created_tasks(client):
+    """GET /tasks/ debe devolver las tareas existentes en la base de datos."""
+    client.post("/tasks/", json={"title": "Primera tarea"})
+    client.post("/tasks/", json={"title": "Segunda tarea"})
+
+    response = client.get("/tasks/")
+    assert response.status_code == 200
+    tasks = response.json()
+    assert len(tasks) == 2
+    titles = [t["title"] for t in tasks]
+    assert "Primera tarea" in titles
+    assert "Segunda tarea" in titles
+
+
 def test_delete_all_tasks_clears_database(client):
     client.post("/tasks/", json={"title": "Tarea uno"})
     client.post("/tasks/", json={"title": "Tarea dos"})
