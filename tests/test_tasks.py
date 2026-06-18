@@ -39,6 +39,14 @@ def test_create_task_title_too_short_returns_422(client):
     assert response.json()["detail"] == "Title must be at least 3 characters long"
 
 
+def test_update_task_title_too_short_returns_422(client):
+    create = client.post("/tasks/", json={"title": "Tarea válida"})
+    task_id = create.json()["id"]
+    response = client.patch(f"/tasks/{task_id}", json={"title": "ab"})
+    assert response.status_code == 422
+    assert response.json()["detail"] == "Title must be at least 3 characters long"
+
+
 def test_delete_all_tasks_clears_database(client):
     client.post("/tasks/", json={"title": "Tarea uno"})
     client.post("/tasks/", json={"title": "Tarea dos"})

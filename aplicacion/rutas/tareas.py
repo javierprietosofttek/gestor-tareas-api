@@ -120,8 +120,15 @@ def update_task(task_id: int, payload: TaskUpdate, db: Session = Depends(get_db)
     Raises:
         HTTPException: Si no existe una tarea con el ``task_id`` proporcionado
             (código 404, detalle "Task not found").
+        HTTPException: Si el título tiene menos de 3 caracteres
+            (código 422, detalle "Title must be at least 3 characters long").
     """
     task = get_task_or_404(task_id, db)
+    if payload.title is not None and len(payload.title) < 3:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Title must be at least 3 characters long",
+        )
     for field, value in payload.model_dump(exclude_unset=True).items():
         setattr(task, field, value)
     db.commit()
