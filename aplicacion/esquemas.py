@@ -1,7 +1,7 @@
 # Esquemas Pydantic para validación de datos de entrada y serialización de respuestas
 
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -32,3 +32,9 @@ class TaskResponse(BaseModel):
 
     # from_attributes permite construir el esquema desde un objeto ORM de SQLAlchemy
     model_config = {"from_attributes": True}
+
+
+# Esquema envolvente para el listado de tareas; incluye el total y los elementos
+class TaskListResponse(BaseModel):
+    total: int
+    items: List[TaskResponse]
