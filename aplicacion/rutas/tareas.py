@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from aplicacion.base_de_datos import get_db
 from aplicacion.esquemas import TaskCreate, TaskResponse, TaskUpdate
-from aplicacion.modelos import Task
+from aplicacion.modelos import Task, TaskStatus
 
 # Router con prefijo /tasks; agrupa todos los endpoints de tareas
 router = APIRouter(prefix="/tasks", tags=["tasks"])
@@ -124,6 +124,33 @@ def update_task(task_id: int, payload: TaskUpdate, db: Session = Depends(get_db)
     task = get_task_or_404(task_id, db)
     for field, value in payload.model_dump(exclude_unset=True).items():
         setattr(task, field, value)
+    db.commit()
+    db.refresh(task)
+    return task
+
+
+# Marca una tarea como completada (status = done) sin enviar el body completo
+@router.patch("/{task_id}/complete", response_model=TaskResponse)
+def complete_task(task_id: int, db: Session = Depends(get_db)):
+    """Marca una tarea como completada actualizando su estado a ``done``.
+
+    Permite marcar una tarea como finalizada sin necesidad de enviar el
+    cuerpo completo de actualización.
+
+    Args:
+        task_id (int): Identificador único de la tarea a completar.
+        db (Session): Sesión activa de SQLAlchemy inyectada por FastAPI.
+
+    Returns:
+        TaskResponse: Tarea actualizada con estado ``done``, serializada
+            según el esquema de respuesta.
+
+    Raises:
+        HTTPException: Si no existe una tarea con el ``task_id`` proporcionado
+            (código 404, detalle "Resource not found").
+    """
+    task = get_task_or_404(task_id, db)
+    task.status = TaskStatus.done
     db.commit()
     db.refresh(task)
     return task
