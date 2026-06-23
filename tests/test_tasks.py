@@ -49,7 +49,7 @@ def test_delete_all_tasks_clears_database(client):
 
     listing = client.get("/tasks/")
     assert listing.status_code == 200
-    assert listing.json() == []
+    assert listing.json() == {"total": 0, "items": []}
 
 
 def test_delete_all_tasks_on_empty_database_returns_204(client):
@@ -58,7 +58,26 @@ def test_delete_all_tasks_on_empty_database_returns_204(client):
 
     listing = client.get("/tasks/")
     assert listing.status_code == 200
-    assert listing.json() == []
+    assert listing.json() == {"total": 0, "items": []}
+
+
+def test_list_tasks_returns_total_and_items(client):
+    client.post("/tasks/", json={"title": "Tarea A"})
+    client.post("/tasks/", json={"title": "Tarea B"})
+
+    response = client.get("/tasks/")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["total"] == 2
+    assert len(body["items"]) == 2
+
+
+def test_list_tasks_empty_returns_zero_total(client):
+    response = client.get("/tasks/")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["total"] == 0
+    assert body["items"] == []
 
 
 def test_create_task_returns_201():
