@@ -59,3 +59,21 @@ def test_delete_all_tasks_on_empty_database_returns_204(client):
     listing = client.get("/tasks/")
     assert listing.status_code == 200
     assert listing.json() == []
+
+
+def test_complete_task_sets_status_to_done(client):
+    create_resp = client.post("/tasks/", json={"title": "Tarea pendiente"})
+    task_id = create_resp.json()["id"]
+    assert create_resp.json()["status"] == "pending"
+
+    response = client.patch(f"/tasks/{task_id}/complete")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "done"
+    assert data["id"] == task_id
+
+
+def test_complete_task_not_found_returns_404(client):
+    response = client.patch("/tasks/9999/complete")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Resource not found"
